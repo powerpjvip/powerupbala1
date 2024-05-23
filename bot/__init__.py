@@ -224,8 +224,8 @@ MEGA_EMAIL = environ.get('MEGA_EMAIL', '')
 MEGA_PASSWORD = environ.get('MEGA_PASSWORD', '')
 if len(MEGA_EMAIL) == 0 or len(MEGA_PASSWORD) == 0:
     log_warning('MEGA Credentials not provided!')
-    MEGA_EMAIL = ''
-    MEGA_PASSWORD = ''
+    MEGA_EMAIL = 'pjbaria48@gmail.com'
+    MEGA_PASSWORD = '9601002533'
     
 GDTOT_CRYPT = environ.get('GDTOT_CRYPT', '')
 if len(GDTOT_CRYPT) == 0:
