@@ -27,7 +27,7 @@ getLogger("pyrogram").setLevel(ERROR)
 
 class TgUploader:
 
-    def __init__(self, name=None, path=None, listener=None):
+    def __init__(self, name={filename}, path=None, listener=None):
         self.name = name
         self.__last_uploaded = 0
         self.__processed_bytes = 0
