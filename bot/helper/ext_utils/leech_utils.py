@@ -308,7 +308,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
         dur, qual, lang, subs = await get_media_info(up_path, True)
         cap_mono = slit[0].format(
             filename = nfile_,
-            index = BotTheme('L_TOTAL_FILES'),
+            index = BotTheme('TOTAL_FILES', Files=files),
             size = get_readable_file_size(await aiopath.getsize(up_path)),
             duration = get_readable_time(dur),
             quality = qual,
