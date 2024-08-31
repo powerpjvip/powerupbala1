@@ -12,12 +12,15 @@ from asyncio.subprocess import PIPE
 from telegraph import upload_file
 from langcodes import Language
 
-from bot import bot_cache, LOGGER, MAX_SPLIT_SIZE, config_dict, user_data
+from bot import LOGGER, MAX_SPLIT_SIZE, config_dict, user_data
 from bot.modules.mediainfo import parseinfo
 from bot.helper.ext_utils.bot_utils import cmd_exec, sync_to_async, get_readable_file_size, get_readable_time
 from bot.helper.ext_utils.fs_utils import ARCH_EXT, get_mime_type
 from bot.helper.ext_utils.telegraph_helper import telegraph
-from bot.helper.themes import BotTheme
+
+
+
+
 
 async def is_multi_streams(path):
     try:
@@ -57,8 +60,10 @@ async def get_media_info(path, metadata=False):
         LOGGER.error(f"Media Info Sections: {result}")
         return (0, "", "", "") if metadata else (0, None, None)
     duration = round(float(fields.get('duration', 0)))
+    
     if metadata:
         lang, qual, stitles = "", "", ""
+        
         if (streams := ffresult.get('streams')) and streams[0].get('codec_type') == 'video':
             qual = int(streams[0].get('height'))
             qual = f"{480 if qual <= 480 else 540 if qual <= 540 else 720 if qual <= 720 else 1080 if qual <= 1080 else 2160 if qual <= 2160 else 4320 if qual <= 4320 else 8640}p"
@@ -116,7 +121,7 @@ async def get_audio_thumb(audio_file):
     if not await aiopath.exists(des_dir):
         await mkdir(des_dir)
     des_dir = ospath.join(des_dir, f"{time()}.jpg")
-    cmd = [bot_cache['pkgs'][2], "-hide_banner", "-loglevel", "error",
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error",
            "-i", audio_file, "-an", "-vcodec", "copy", des_dir]
     status = await create_subprocess_exec(*cmd, stderr=PIPE)
     if await status.wait() != 0 or not await aiopath.exists(des_dir):
@@ -135,7 +140,7 @@ async def take_ss(video_file, duration=None, total=1, gen_ss=False):
     if duration == 0:
         duration = 3
     duration = duration - (duration * 2 / 100)
-    cmd = [bot_cache['pkgs'][2], "-hide_banner", "-loglevel", "error", "-ss", "",
+    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-ss", "",
            "-i", video_file, "-vf", "thumbnail", "-frames:v", "1", des_dir]
     tstamps = {}
     thumb_sem = Semaphore(3)
@@ -183,7 +188,7 @@ async def split_file(path, size, file_, dirpath, split_size, listener, start_tim
         while i <= parts or start_time < duration - 4:
             parted_name = f"{base_name}.part{i:03}{extension}"
             out_path = ospath.join(dirpath, parted_name)
-            cmd = [bot_cache['pkgs'][2], "-hide_banner", "-loglevel", "error", "-ss", str(start_time), "-i", path,
+            cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-ss", str(start_time), "-i", path,
                    "-fs", str(split_size), "-map", "0", "-map_chapters", "-1", "-async", "1", "-strict",
                    "-2", "-c", "copy", out_path]
             if not multi_streams:
@@ -248,7 +253,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
     remname = config_dict[f'{ctag}_FILENAME_REMNAME'] if (val:=user_dict.get(f'{ftag}remname', '')) == '' else val
     suffix = config_dict[f'{ctag}_FILENAME_SUFFIX'] if (val:=user_dict.get(f'{ftag}suffix', '')) == '' else val
     lcaption = config_dict['LEECH_FILENAME_CAPTION'] if (val:=user_dict.get('lcaption', '')) == '' else val
- 
+    count = 0
     prefile_ = file_
     file_ = re_sub(r'www\S+', '', file_)
         
@@ -271,19 +276,21 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
 
     nfile_ = file_
     if prefix:
+        count += 1
         nfile_ = prefix.replace('\s', ' ') + file_
         prefix = re_sub(r'<.*?>', '', prefix).replace('\s', ' ')
         if not file_.startswith(prefix):
-            file_ = f"{prefix}{file_}"
+            file_ = f"{str(count).zfill(3)}{prefix}{file_}"
 
     if suffix and not isMirror:
         suffix = suffix.replace('\s', ' ')
         sufLen = len(suffix)
+        count += 1
         fileDict = file_.split('.')
         _extIn = 1 + len(fileDict[-1])
         _extOutName = '.'.join(
             fileDict[:-1]).replace('.', ' ').replace('-', ' ')
-        _newExtFileName = f"{_extOutName}{suffix}.{fileDict[-1]}"
+        _newExtFileName = f"{str(count).zfill(3)}{_extOutName}{suffix}.{fileDict[-1]}"
         if len(_extOutName) > (64 - (sufLen + _extIn)):
             _newExtFileName = (
                 _extOutName[: 64 - (sufLen + _extIn)]
@@ -292,12 +299,12 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
         file_ = _newExtFileName
     elif suffix:
         suffix = suffix.replace('\s', ' ')
-        file_ = f"{ospath.splitext(file_)[0]}{suffix}{ospath.splitext(file_)[1]}" if '.' in file_ else f"{file_}{suffix}"
+        file_ = f"{ospath.splitext(file_)[0]}{suffix}{ospath.splitext(file_)[1]}" if '.' in file_ else f"{str(count).zfill(3)}{file_}{suffix}"
 
 
     cap_mono =  f"<{config_dict['CAP_FONT']}>{nfile_}</{config_dict['CAP_FONT']}>" if config_dict['CAP_FONT'] else nfile_
     if lcaption and dirpath and not isMirror:
-        
+        #count += 1
         def lowerVars(match):
             return f"{{{match.group(1).lower()}}}"
 
@@ -309,6 +316,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
         cap_mono = slit[0].format(
             filename = nfile_,
             size = get_readable_file_size(await aiopath.getsize(up_path)),
+            index = str(count).zfill(3),
             duration = get_readable_time(dur),
             quality = qual,
             languages = lang,
