@@ -93,6 +93,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
     reply_to      = None
     file_         = None
     session       = ''
+    count         = 0
     
     if not isinstance(seed, bool):
         dargs = seed.split(':')
@@ -121,10 +122,13 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
         sameDir['tasks'].add(message.id)
 
     if isBulk:
+        
         try:
             bulk = await extract_bulk_links(message, bulk_start, bulk_end)
             if len(bulk) == 0:
                 raise ValueError('Bulk Empty!')
+            if len(bulk) :
+                count += 1                
         except:
             await sendMessage(message, 'Reply to text file or tg message that have links seperated by new line!')
             return
