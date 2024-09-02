@@ -3,11 +3,11 @@ from aiofiles import open as aiopen
 from aiofiles.os import remove
 
 async def index_(index: int):
-        if int(index) == 0:
-            num = 0
-        else:
-            num = int(index)-1
-        return num
+    if int(index) == 0:
+        num = 0
+    else:
+        num = int(index)-1
+    return num
 
 
 
