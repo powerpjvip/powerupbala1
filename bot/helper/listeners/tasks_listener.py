@@ -498,6 +498,7 @@ class MirrorLeechListener:
             if mime_type == "Folder":
                 msg += BotTheme('M_SUBFOLD', Folder=folders)
                 msg += BotTheme('TOTAL_FILES', Files=files)
+                count = files
             if link or rclonePath and config_dict['RCLONE_SERVE_URL'] and not private:
                 if (is_DDL := isinstance(link, dict)):
                     for dlup, dlink in link.items():
