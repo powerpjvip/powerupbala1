@@ -2,6 +2,15 @@
 from aiofiles import open as aiopen
 from aiofiles.os import remove
 
+async def index_(index: int):
+        if int(index) == 0:
+            num = 0
+        else:
+            num = int(index)-1
+        return num
+
+
+
 
 async def get_links_from_message(text, bulk_start, bulk_end):
     links_list = text.split('\n')
@@ -24,7 +33,8 @@ async def get_links_from_file(message, bulk_start, bulk_end):
     async with aiopen(text_file_dir, 'r+') as f:
         lines = await f.readlines()
         links_list.extend(line.strip() for line in lines if len(line) != 0)
-
+        index= len(links_list)
+        num = index_(index=index)
     if bulk_start != 0 and bulk_end != 0:
         links_list = links_list[bulk_start:bulk_end]
     elif bulk_start != 0:
@@ -40,6 +50,7 @@ async def get_links_from_file(message, bulk_start, bulk_end):
 async def extract_bulk_links(message, bulk_start, bulk_end):
     bulk_start = int(bulk_start)
     bulk_end = int(bulk_end)
+    
     if (reply_to := message.reply_to_message) and (file_ := reply_to.document) and (file_.mime_type == 'text/plain'):
         return await get_links_from_file(message.reply_to_message, bulk_start, bulk_end)
     elif text := message.reply_to_message.text:
