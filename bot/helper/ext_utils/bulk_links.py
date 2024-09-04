@@ -34,7 +34,7 @@ async def get_links_from_file(message, bulk_start, bulk_end):
         lines = await f.readlines()
         links_list.extend(line.strip() for line in lines if len(line) != 0)
         index= len(links_list)
-        num = index_(index=index)
+        #num = index_(index=index)
     if bulk_start != 0 and bulk_end != 0:
         links_list = links_list[bulk_start:bulk_end]
     elif bulk_start != 0:
