@@ -138,7 +138,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
             return
         b_msg = input_list[:1]
         b_msg.append(f'{bulk[0]} -i {len(bulk)}')
-        count+=1
+        #count+=1
         nextmsg = await sendMessage(message, " ".join(b_msg))
         nextmsg = await client.get_messages(chat_id=message.chat.id, message_ids=nextmsg.id)
         nextmsg.from_user = message.from_user
