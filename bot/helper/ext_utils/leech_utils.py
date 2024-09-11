@@ -18,7 +18,7 @@ from bot.helper.ext_utils.bot_utils import cmd_exec, sync_to_async, get_readable
 from bot.helper.ext_utils.fs_utils import ARCH_EXT, get_mime_type
 from bot.helper.ext_utils.telegraph_helper import telegraph
 
-
+count = 0
 
 
 
@@ -256,7 +256,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
     #count = 0
     prefile_ = file_
     file_ = re_sub(r'www\S+', '', file_)
-        
+    global count   
     if remname:
         if not remname.startswith('|'):
             remname = f"|{remname}"
