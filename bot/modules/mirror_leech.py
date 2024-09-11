@@ -38,7 +38,7 @@ count = 0
 async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=None, bulk=[]):
     text = message.text.split('\n')
     input_list = text[0].split(' ')
-    global count
+    #global count
     arg_base = {'link': '',
                 '-i': '0',
                 '-m': '', '-sd': '', '-samedir': '',
