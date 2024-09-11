@@ -276,7 +276,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
 
     nfile_ = file_
     if prefix:
-        count += 1
+        #count += 1
         nfile_ = prefix.replace('\s', ' ') + file_
         prefix = re_sub(r'<.*?>', '', prefix).replace('\s', ' ')
         if not file_.startswith(prefix):
@@ -285,7 +285,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
     if suffix and not isMirror:
         suffix = suffix.replace('\s', ' ')
         sufLen = len(suffix)
-        count += 1
+        #count += 1
         fileDict = file_.split('.')
         _extIn = 1 + len(fileDict[-1])
         _extOutName = '.'.join(
@@ -304,7 +304,7 @@ async def format_filename(file_, user_id, dirpath=None, isMirror=False):
 
     cap_mono =  f"<{config_dict['CAP_FONT']}>{nfile_}</{config_dict['CAP_FONT']}>" if config_dict['CAP_FONT'] else nfile_
     if lcaption and dirpath and not isMirror:
-        #count += 1
+        count += 1
         def lowerVars(match):
             return f"{{{match.group(1).lower()}}}"
 
