@@ -32,11 +32,13 @@ from bot.helper.ext_utils.help_messages import MIRROR_HELP_MESSAGE, CLONE_HELP_M
 from bot.helper.ext_utils.bulk_links import extract_bulk_links
 from bot.modules.gen_pyro_sess import get_decrypt_key
 
+count = 0
+
 @new_task
 async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=None, bulk=[]):
     text = message.text.split('\n')
     input_list = text[0].split(' ')
-
+    global count
     arg_base = {'link': '',
                 '-i': '0',
                 '-m': '', '-sd': '', '-samedir': '',
